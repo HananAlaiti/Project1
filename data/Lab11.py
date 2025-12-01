@@ -1,0 +1,137 @@
+import os
+import matplotlib.pyplot as plt
+
+DATA_DIR = "data"
+STUDENTS_FILE = os.path.join(DATA_DIR, "students.txt")
+ASSIGNMENTS_FILE = os.path.join(DATA_DIR, "assignments.txt")
+SUBMISSIONS_DIR = os.path.join(DATA_DIR, "submissions")
+
+def load_students():
+    students = {}
+    with open(STUDENTS_FILE, 'r') as f:
+        for line in f:
+            line = line.strip()
+            if line == '':
+                continue
+
+            student_id = line[:3]
+            name = line[3:].strip()
+            students[name] = student_id
+    return students
+
+def load_assignments():
+    assignments = {}
+    with open(ASSIGNMENTS_FILE, 'r') as f:
+        lines = [line.strip() for line in f if line.strip() != '']
+
+        for i in range(0, len(lines), 3):
+            assignment_name = lines[i]
+            assignment_id = lines[i+1]
+            points = float(lines[i+2])
+            assignments[assignment_name] = (assignment_id, points)
+    return assignments
+
+def load_submissions():
+    submissions = {}
+    for filename in os.listdir(SUBMISSIONS_DIR):
+        if not filename.endswith('.txt'):
+            continue
+        path = os.path.join(SUBMISSIONS_DIR, filename)
+        with open(path, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if line == '':
+                    continue
+                # Format: student_id,assignment_id,percent
+                parts = line.split(',')
+                if len(parts) < 3:
+                    continue
+                student_id = parts[0].strip()
+                assignment_id = parts[1].strip()
+                percent = float(parts[2].strip())
+                if student_id not in submissions:
+                    submissions[student_id] = {}
+                submissions[student_id][assignment_id] = percent
+    return submissions
+
+def student_grade(students, assignments, submissions):
+    name = input("What is the student's name: ").strip()
+    if name not in students:
+        print("Student not found")
+        return
+    student_id = students[name]
+
+    total_points = 0
+    weighted_sum = 0
+    for assignment_name, (assignment_id, points) in assignments.items():
+        percent = submissions.get(student_id, {}).get(assignment_id, 0)
+        weighted_sum += percent * points
+        total_points += points
+
+    grade = round(weighted_sum / total_points)
+    print(f"{grade}%")
+
+def assignment_stats(assignments, submissions):
+    name = input("What is the assignment name: ").strip()
+    if name not in assignments:
+        print("Assignment not found")
+        return
+    assignment_id, _ = assignments[name]
+
+    scores = []
+    for student_subs in submissions.values():
+        if assignment_id in student_subs:
+            scores.append(student_subs[assignment_id])
+
+    if not scores:
+        print("No scores found")
+        return
+
+    print(f"Min: {round(min(scores))}%")
+    print(f"Avg: {round(sum(scores)/len(scores))}%")
+    print(f"Max: {round(max(scores))}%")
+
+def assignment_graph(assignments, submissions):
+    name = input("What is the assignment name: ").strip()
+    if name not in assignments:
+        print("Assignment not found")
+        return
+    assignment_id, _ = assignments[name]
+
+    scores = []
+    for student_subs in submissions.values():
+        if assignment_id in student_subs:
+            scores.append(student_subs[assignment_id])
+
+    if not scores:
+        print("No scores found")
+        return
+
+    plt.hist(scores, bins=[0, 25, 50, 75, 100])
+    plt.title(f"Scores for {name}")
+    plt.xlabel("Percentage")
+    plt.ylabel("Number of students")
+    plt.show()
+
+def main():
+    students = load_students()
+    assignments = load_assignments()
+    submissions = load_submissions()
+
+    print("1. Student grade")
+    print("2. Assignment statistics")
+    print("3. Assignment graph")
+    choice = input("Enter your selection: ").strip()
+
+    if choice == '1':
+        student_grade(students, assignments, submissions)
+    elif choice == '2':
+        assignment_stats(assignments, submissions)
+    elif choice == '3':
+        assignment_graph(assignments, submissions)
+    else:
+        print("Invalid selection")
+
+if __name__ == "__main__":
+    main()
+

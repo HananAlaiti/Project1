@@ -13,9 +13,7 @@ def load_students():
             line = line.strip()
             if not line:
                 continue
-            student_id_str = line[:3].strip()
-            # normalize: remove leading zeros by converting to int then str
-            student_id = str(int(student_id_str))
+            student_id = line[:3]
             name = line[3:].strip()
             students[name] = student_id
     return students
@@ -26,8 +24,7 @@ def load_assignments():
         lines = [line.strip() for line in f if line.strip()]
         for i in range(0, len(lines), 3):
             assignment_name = lines[i]
-            assignment_id_str = lines[i+1].strip()
-            assignment_id = str(int(assignment_id_str))  # normalize
+            assignment_id = lines[i+1]
             points = float(lines[i+2])
             assignments[assignment_name] = (assignment_id, points)
     return assignments
@@ -45,15 +42,10 @@ def load_submissions():
                 parts = line.split(',')
                 if len(parts) < 3:
                     continue
-                student_id_str = parts[0].strip()
-                assignment_id_str = parts[1].strip()
-                percent_str = parts[2].strip()
-
-                # Normalize IDs
+                student_id = parts[0].strip()
+                assignment_id = parts[1].strip()
                 try:
-                    student_id = str(int(student_id_str))
-                    assignment_id = str(int(assignment_id_str))
-                    percent = float(percent_str)
+                    percent = float(parts[2].strip())
                 except ValueError:
                     continue  # skip bad lines
 
@@ -87,7 +79,6 @@ def student_grade(students, assignments, submissions):
 
     grade = round(weighted_sum / total_points)
     print(f"{grade}%")
-
 
 def assignment_stats(assignments, submissions):
     assignment_name = input("What is the assignment name: ")

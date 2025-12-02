@@ -69,18 +69,15 @@ def student_grade(students, assignments, submissions):
         return
     student_id = students[student_name]
 
-    weighted_sum = 0
-    total_points = 0
-
     student_submissions = submissions.get(student_id)
-    if student_submissions is None:
+    if not student_submissions:
         print("0%")
         return
 
+    weighted_sum = 0
+    total_points = 0
     for assignment_name, (assignment_id, points) in assignments.items():
-        score = student_submissions.get(assignment_id)
-        if score is None:
-            score = 0
+        score = student_submissions.get(assignment_id, 0)
         weighted_sum += score * points
         total_points += points
 
@@ -90,6 +87,7 @@ def student_grade(students, assignments, submissions):
 
     grade = round(weighted_sum / total_points)
     print(f"{grade}%")
+
 
 def assignment_stats(assignments, submissions):
     assignment_name = input("What is the assignment name: ")

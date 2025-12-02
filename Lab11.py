@@ -13,7 +13,6 @@ def load_students():
             line = line.strip()
             if line == '':
                 continue
-
             student_id = line[:3]
             name = line[3:].strip()
             students[name] = student_id
@@ -23,7 +22,6 @@ def load_assignments():
     assignments = {}
     with open(ASSIGNMENTS_FILE, 'r') as f:
         lines = [line.strip() for line in f if line.strip() != '']
-
         for i in range(0, len(lines), 3):
             assignment_name = lines[i]
             assignment_id = lines[i+1]
@@ -42,7 +40,6 @@ def load_submissions():
                 line = line.strip()
                 if line == '':
                     continue
-                # Format: student_id,assignment_id,percent
                 parts = line.split(',')
                 if len(parts) < 3:
                     continue
@@ -55,11 +52,11 @@ def load_submissions():
     return submissions
 
 def student_grade(students, assignments, submissions):
-    name = input("What is the student's name: ").strip()
-    if name not in students:
+    student_name = input("What is the student's name: ")
+    if student_name not in students:
         print("Student not found")
         return
-    student_id = students[name]
+    student_id = students[student_name]
 
     total_points = 0
     weighted_sum = 0
@@ -72,11 +69,11 @@ def student_grade(students, assignments, submissions):
     print(f"{grade}%")
 
 def assignment_stats(assignments, submissions):
-    name = input("What is the assignment name: ").strip()
-    if name not in assignments:
+    assignment_name = input("What is the assignment name: ")
+    if assignment_name not in assignments:
         print("Assignment not found")
         return
-    assignment_id, _ = assignments[name]
+    assignment_id, _ = assignments[assignment_name]
 
     scores = []
     for student_subs in submissions.values():
@@ -92,11 +89,11 @@ def assignment_stats(assignments, submissions):
     print(f"Max: {round(max(scores))}%")
 
 def assignment_graph(assignments, submissions):
-    name = input("What is the assignment name: ").strip()
-    if name not in assignments:
+    assignment_name = input("What is the assignment name: ")
+    if assignment_name not in assignments:
         print("Assignment not found")
         return
-    assignment_id, _ = assignments[name]
+    assignment_id, _ = assignments[assignment_name]
 
     scores = []
     for student_subs in submissions.values():
@@ -108,7 +105,7 @@ def assignment_graph(assignments, submissions):
         return
 
     plt.hist(scores, bins=[0, 25, 50, 75, 100])
-    plt.title(f"Scores for {name}")
+    plt.title(f"Scores for {assignment_name}")
     plt.xlabel("Percentage")
     plt.ylabel("Number of students")
     plt.show()
@@ -121,16 +118,17 @@ def main():
     print("1. Student grade")
     print("2. Assignment statistics")
     print("3. Assignment graph")
-    choice = input("Enter your selection: ").strip()
+    selection = input("Enter your selection: ")
 
-    if choice == '1':
+    if selection == "1":
         student_grade(students, assignments, submissions)
-    elif choice == '2':
+    elif selection == "2":
         assignment_stats(assignments, submissions)
-    elif choice == '3':
+    elif selection == "3":
         assignment_graph(assignments, submissions)
     else:
         print("Invalid selection")
 
 if __name__ == "__main__":
     main()
+

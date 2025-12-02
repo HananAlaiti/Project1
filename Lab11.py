@@ -39,7 +39,7 @@ def load_submissions():
                 line = line.strip()
                 if not line:
                     continue
-                parts = line.split(',')
+                parts = line.split('|')
                 if len(parts) < 3:
                     continue
                 student_id = parts[0].strip()
@@ -47,7 +47,7 @@ def load_submissions():
                 try:
                     percent = float(parts[2].strip())
                 except ValueError:
-                    continue  # skip bad lines
+                    continue
 
                 if student_id not in submissions:
                     submissions[student_id] = {}

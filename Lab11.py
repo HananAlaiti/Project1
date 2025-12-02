@@ -13,7 +13,7 @@ def load_students():
             line = line.strip()
             if line == '':
                 continue
-            student_id = line[:3]
+            student_id = str(int(line[:3]))  # normalize
             name = line[3:].strip()
             students[name] = student_id
     return students
@@ -24,7 +24,7 @@ def load_assignments():
         lines = [line.strip() for line in f if line.strip() != '']
         for i in range(0, len(lines), 3):
             assignment_name = lines[i]
-            assignment_id = lines[i+1]
+            assignment_id = str(int(lines[i+1]))  # normalize
             points = float(lines[i+2])
             assignments[assignment_name] = (assignment_id, points)
     return assignments
@@ -43,13 +43,14 @@ def load_submissions():
                 parts = line.split(',')
                 if len(parts) < 3:
                     continue
-                student_id = parts[0].strip()
-                assignment_id = parts[1].strip()
+                student_id = str(int(parts[0].strip()))  # normalize
+                assignment_id = str(int(parts[1].strip()))  # normalize
                 percent = float(parts[2].strip())
                 if student_id not in submissions:
                     submissions[student_id] = {}
                 submissions[student_id][assignment_id] = percent
     return submissions
+
 
 def student_grade(students, assignments, submissions):
     student_name = input("What is the student's name: ")
